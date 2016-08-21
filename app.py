@@ -1,5 +1,5 @@
 import json
-from flask import Flask, url_for, redirect, session
+from flask import Flask, url_for, redirect, session, render_template
 from flask_login import (UserMixin, login_required, login_user, logout_user,
                          current_user)
 from flask_googlelogin import GoogleLogin
@@ -18,6 +18,10 @@ googlelogin = GoogleLogin(app)
 @googlelogin.user_loader
 def get_user(userid):
     return users.get(userid)
+
+@app.route("/cheap")
+def cheap():
+    return render_template('cheap.html')
 
 @app.route('/')
 def index():
