@@ -3,14 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Flask React Tutorial</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
+    <script src="https://npmcdn.com/react@15.3.1/dist/react-with-addons.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
-    <script src="https://npmcdn.com/recharts/umd/Recharts.min.js"></script>
+    <script src="https://npmcdn.com/react-dom@15.3.1/dist/react-dom.min.js"></script>
+    <script src="https://npmcdn.com/react-dom@15.3.1/dist/react-dom-server.min.js"></script>
+    <script src="https://npmcdn.com/recharts@0.13.3/umd/Recharts.min.js"></script>
 </head>
 <body>
      <div id="mount-point"></div>
+     <div id="container">
+     <!-- This element's contents will be replaced with your component. -->
+     </div>
 </body>
 
-  <script type="text/jsx" src="../static/example.js"></script>
+  <script type="text/jsx" src="../static/component.js"></script>
 
 </html>
