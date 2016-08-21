@@ -37,5 +37,10 @@ const SimpleLineChart = React.createClass({
 
 ReactDOM.render(
   <SimpleLineChart url="/api/data" />,
-  document.getElementById('container')
+  document.getElementById('chartOne')
+);
+
+ReactDOM.render(
+  <SimpleLineChart url="/api/data" />,
+  document.getElementById('chartTwo')
 );
