@@ -19,10 +19,10 @@ googlelogin = GoogleLogin(app)
 def get_user(userid):
     return users.get(userid)
 
-@app.route("/cheap")
+@app.route("/charts")
 @login_required
-def cheap():
-    return render_template('cheap.html')
+def charts():
+    return render_template('charts.html')
 
 @app.route('/')
 def index():
