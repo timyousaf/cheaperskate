@@ -20,6 +20,7 @@ def get_user(userid):
     return users.get(userid)
 
 @app.route("/cheap")
+@login_required
 def cheap():
     return render_template('cheap.html')
 
