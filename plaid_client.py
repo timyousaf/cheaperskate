@@ -11,6 +11,9 @@ class PlaidClient():
 		self.creds = creds
 		self.loadTransactions()
 
+	def __init__(self):
+		self.transactions = self.getMockTransactions()
+
 	def loadTransactions(self):
 		creds = self.creds		
 		client_id = creds["client_id"]
@@ -53,3 +56,37 @@ class PlaidClient():
 
 	def getTransactions(self):
 		return self.transactions
+
+	def getMockTransactions(self):
+		return [
+				{ "date" : "2016-05-03", "amount" : 11.65, "name" : "Uber" },
+				{ "date" : "2016-05-13", "amount" : 23.04, "name" : "Uber" },
+				{ "date" : "2016-05-16", "amount" : 13.41, "name" : "Uber" },
+				{ "date" : "2016-05-26", "amount" : 17.11, "name" : "Uber" },
+				{ "date" : "2016-05-27", "amount" : 13.16, "name" : "Uber" },
+				{ "date" : "2016-05-29", "amount" : 15.02, "name" : "Uber" },
+				{ "date" : "2016-05-30", "amount" : 11.29, "name" : "Uber" },
+				{ "date" : "2016-06-06", "amount" : 30.03, "name" : "Uber" },
+				{ "date" : "2016-06-15", "amount" : 32.11, "name" : "Uber" },
+				{ "date" : "2016-06-25", "amount" : 10.74, "name" : "Uber" },
+				{ "date" : "2016-07-03", "amount" : 11.89, "name" : "Uber" },
+				{ "date" : "2016-07-05", "amount" : 26.95, "name" : "Uber" },
+				{ "date" : "2016-07-22", "amount" : 19.59, "name" : "Uber" },
+				{ "date" : "2016-07-23", "amount" : 41.52, "name" : "Uber" },
+				{ "date" : "2016-07-25", "amount" : 85.26, "name" : "Uber" },
+				{ "date" : "2016-07-27", "amount" : 59.29, "name" : "Uber" },
+				{ "date" : "2016-07-29", "amount" : 58.50, "name" : "Uber" },
+				{ "date" : "2016-08-02", "amount" : 9.93, "name" : "Uber" },
+				{ "date" : "2016-08-07", "amount" : 13.97, "name" : "Uber" },
+				{ "date" : "2016-08-14", "amount" : 12.98, "name" : "Uber" },
+				{ "date" : "2016-08-16", "amount" : 5.44, "name" : "Uber" },
+				{ "date" : "2016-08-19", "amount" : 9.43, "name" : "Uber" },
+				{ "date" : "2016-09-03", "amount" : 20.32, "name" : "Uber" },
+				{ "date" : "2016-09-06", "amount" : 9.55, "name" : "Uber" },
+				{ "date" : "2016-10-03", "amount" : 17.41, "name" : "Uber" },
+				{ "date" : "2016-10-06", "amount" : 92.53, "name" : "Uber" },
+				{ "date" : "2016-11-01", "amount" : 44.01, "name" : "Uber" },
+				{ "date" : "2016-12-02", "amount" : 24.16, "name" : "Uber" },
+				{ "date" : "2016-12-04", "amount" : 17.35, "name" : "Uber" },
+				{ "date" : "2016-12-06", "amount" : 42.84, "name" : "Uber" }
+			]

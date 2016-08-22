@@ -14,7 +14,8 @@ app.config.update(
 )
 
 google_login = GoogleLogin(app)
-finance_data = PlaidClient("/Users/timyousaf/plaid.txt")
+#finance_data = PlaidClient("/Users/timyousaf/plaid.txt")
+finance_data = PlaidClient()
 calculator = Calculator()
 calculator.parseTransactions(finance_data.getTransactions())
 
@@ -25,10 +26,14 @@ def charts():
 
 @app.route("/test")
 def test():
-    return json.dumps(finance_data.getTransactions())
+    return calculator.getUberTransactions()
+
+@app.route("/api/uber")
+def api_uber():
+    return calculator.getUberTransactions()
 
 @app.route("/api/data")
-def data():
+def api_data():
     response = [
       {"name": 'Page A', "uv": 4000, "pv": 2400, "amt": 2400},
       {"name": 'Page B', "uv": 3000, "pv": 1398, "amt": 2210},
