@@ -1,6 +1,7 @@
 from plaid import Client
 from plaid import errors as plaid_errors
 from plaid.utils import json
+import sys
 
 class PlaidClient():
 
@@ -32,6 +33,8 @@ class PlaidClient():
 		    	})
 		except plaid_errors.PlaidError as e:
 			print e.message
+			print("Failed to load transactions from Plaid API.")
+			sys.exit()
 		else:
 			connect_data = response.json()
 			transactions = connect_data["transactions"]
@@ -42,7 +45,11 @@ class PlaidClient():
 								 "name" : transaction["name"], 
 								 "amount": transaction["amount"] 
 								 } )
-			self.transactions = cleaned
+			if cleaned:
+				self.transactions = cleaned
+			else:
+				print("Failed to load transactions from Plaid API.")
+				sys.exit()
 
 	def getTransactions(self):
 		return self.transactions

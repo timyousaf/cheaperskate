@@ -2,6 +2,7 @@ import json
 from flask import Flask, url_for, redirect, session, render_template, jsonify
 from flask_oauth2_login import GoogleLogin
 from plaid_client import PlaidClient
+from calculator import Calculator
 
 app = Flask(__name__)
 
@@ -14,6 +15,8 @@ app.config.update(
 
 google_login = GoogleLogin(app)
 finance_data = PlaidClient("/Users/timyousaf/plaid.txt")
+calculator = Calculator()
+calculator.parseTransactions(finance_data.getTransactions())
 
 @app.route("/charts")
 def charts():
