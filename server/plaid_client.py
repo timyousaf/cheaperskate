@@ -6,12 +6,14 @@ import sys
 class PlaidClient():
 
 	def __init__(self, filename):
+		# real plaid client
 		creds_file =  open(filename)
 		creds = json.loads(creds_file.read())
 		self.creds = creds
 		self.loadTransactions()
 
 	def __init__(self):
+		# mock plaid client
 		self.transactions = self.getMockTransactions()
 
 	def loadTransactions(self):

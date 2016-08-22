@@ -1,8 +1,8 @@
 import json
 from flask import Flask, url_for, redirect, session, render_template, jsonify
 from flask_oauth2_login import GoogleLogin
-from plaid_client import PlaidClient
-from calculator import Calculator
+from server.plaid_client import PlaidClient
+from server.calculator import Calculator
 
 app = Flask(__name__)
 
