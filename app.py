@@ -14,10 +14,10 @@ app.config.update(
 )
 
 google_login = GoogleLogin(app)
-#finance_data = PlaidClient("/Users/timyousaf/plaid.txt")
-finance_data = PlaidClient()
+#plaid_client = PlaidClient("/Users/timyousaf/plaid.txt")
+plaid_client = PlaidClient()
 calculator = Calculator()
-calculator.parseTransactions(finance_data.getTransactions())
+calculator.parseTransactions(plaid_client.getTransactions())
 
 @app.route("/charts")
 def charts():
