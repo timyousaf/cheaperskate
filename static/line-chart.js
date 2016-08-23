@@ -21,14 +21,14 @@ const SimpleLineChart = React.createClass({
     },
     render () {
     return (
-        <LineChart width={600} height={300} data={this.state.data}
+        <LineChart width={800} height={400} data={this.state.data}
             margin={{top: 5, right: 30, left: 20, bottom: 5}}>
        <XAxis dataKey="date"/>
        <YAxis/>
        <Tooltip/>
        <Legend />
-       <Line type="monotone" dataKey="Uber" stroke="#DA907A" activeDot={{r: 8}}/>
-       <Line type="monotone" dataKey="Seamless" stroke="#5194EC" activeDot={{r: 8}}/>
+       <Line type="monotone" dataKey="Uber" stroke="#DA907A" activeDot={{r: 5}}/>
+       <Line type="monotone" dataKey="Seamless" stroke="#5194EC" activeDot={{r: 5}}/>
       </LineChart>
     );
   }

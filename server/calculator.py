@@ -12,7 +12,7 @@ class Calculator():
 	def parseTransactions(self, transactions):
 		t_df = pd.DataFrame(transactions)
 
-		start_days_ago = 365
+		start_days_ago = 730
 		end_days_from = 1
 		bucket = 'M' # D = day, W = week, M = month
 		
