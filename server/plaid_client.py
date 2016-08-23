@@ -4,7 +4,7 @@ from plaid.utils import json
 import sys
 
 class PlaidClient():
-
+	
 	def __init__(self, filename):
 		# real plaid client
 		creds_file =  open(filename)
@@ -12,30 +12,21 @@ class PlaidClient():
 		self.creds = creds
 		self.loadTransactions()
 
-	def __init__(self):
-		# mock plaid client
-		self.transactions = self.getMockTransactions()
-
 	def loadTransactions(self):
 		creds = self.creds		
 		client_id = creds["client_id"]
 		secret = creds["secret"]
-		account_type = creds["account_type"]
-		username = creds["username"]
-		password = creds["password"]  	
+		amex_access_token = creds["amex_access_token"]
+		
+		print client_id, secret, amex_access_token
 
 		Client.config({
 			'url': 'https://tartan.plaid.com'
 		})
-		client = Client(client_id=client_id, secret=secret)
-		
+		client = Client(client_id=client_id, secret=secret, access_token=amex_access_token)
+
 		try:
-		    response = client.connect(
-		    	account_type, 
-		    	{
-			     'username': username,
-			     'password': password
-		    	})
+		    response = client.connect_get()
 		except plaid_errors.PlaidError as e:
 			print e.message
 			print("Failed to load transactions from Plaid API.")
@@ -43,7 +34,7 @@ class PlaidClient():
 		else:
 			connect_data = response.json()
 			transactions = connect_data["transactions"]
-			print "Loaded {0} {1} transactions.".format(len(transactions), account_type)
+			print "Loaded {0} transactions.".format(len(transactions))
 			cleaned = []
 			for transaction in transactions:
 				cleaned.append({ "date" : transaction["date"], 
