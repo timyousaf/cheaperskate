@@ -27,8 +27,8 @@ const SimpleLineChart = React.createClass({
        <YAxis/>
        <Tooltip/>
        <Legend />
-       <Line type="monotone" dataKey="uber" stroke="#8884d8" activeDot={{r: 8}}/>
-       
+       <Line type="monotone" dataKey="Uber" stroke="#DA907A" activeDot={{r: 8}}/>
+       <Line type="monotone" dataKey="Seamless" stroke="#5194EC" activeDot={{r: 8}}/>
       </LineChart>
     );
   }
