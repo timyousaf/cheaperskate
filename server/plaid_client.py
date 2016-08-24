@@ -1,5 +1,4 @@
 from plaid import Client
-from plaid import errors as plaid_errors
 from plaid.utils import json
 import cPickle as pickle
 import sys
@@ -12,7 +11,6 @@ class PlaidClient():
 	transactions = []
 
 	def __init__(self, filename):
-		# real plaid client
 		creds_file =  open(filename)
 		for line in creds_file:
 			try:
@@ -43,7 +41,7 @@ class PlaidClient():
 
 	def loadTransactions(self):
 
-		transactions = []
+		all_transactions = []
 
 		for account_type in self.account_clients:
 			try:
@@ -62,9 +60,9 @@ class PlaidClient():
 									 "name" : transaction["name"], 
 									 "amount": transaction["amount"] 
 									 } )
-				transactions.extend(cleaned)
+				all_transactions.extend(cleaned)
 
-		if len(transactions) == 0:
+		if len(all_transactions) == 0:
 			print("Failed to load any transactions from the Plaid API. Attempting to load from cache ...")
 			try:
 				self.loadTransactionsFromCache()
@@ -73,15 +71,14 @@ class PlaidClient():
 				print("Failed to load transactions from cache :( exiting.")
 				sys.exit()
 		else:
-			print("Loaded total of {} transactions.".format(len(transactions)))
-			self.transactions = transactions
+			print("Loaded total of {} transactions.".format(len(all_transactions)))
+			self.transactions = all_transactions
 			self.saveTransactionsToCache()
 
 	def saveTransactionsToCache(self):
 		with open(CACHE_FILENAME, 'wb') as output:
 			pickle.dump(self.transactions, output, -1)
 		print("Cached transactions to disk.")
-
 
 	def loadTransactionsFromCache(self):
 		with open(CACHE_FILENAME, 'rb') as input:
