@@ -29,6 +29,7 @@ const SimpleLineChart = React.createClass({
        <Legend />
        <Line type="monotone" dataKey="Uber" stroke="#DA907A" activeDot={{r: 5}}/>
        <Line type="monotone" dataKey="Seamless" stroke="#5194EC" activeDot={{r: 5}}/>
+       <Line type="monotone" dataKey="Amazon" stroke="#60D394" activeDot={{r: 5}}/>
       </LineChart>
     );
   }

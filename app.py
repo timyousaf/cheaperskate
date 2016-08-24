@@ -15,8 +15,8 @@ app.config.update(
 
 google_login = GoogleLogin(app)
 plaid_client = PlaidClient("/Users/timyousaf/plaid.txt")
-#plaid_client = PlaidClient()
 calculator = Calculator()
+
 calculator.parseTransactions(plaid_client.getTransactions())
 
 @app.route("/charts")
