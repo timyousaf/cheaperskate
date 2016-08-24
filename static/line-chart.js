@@ -37,6 +37,6 @@ const SimpleLineChart = React.createClass({
 })
 
 ReactDOM.render(
-  <SimpleLineChart url="/api/uber" />,
+  <SimpleLineChart url="/data?bucket=M&days_ago=730" />,
   document.getElementById('chartOne')
 );

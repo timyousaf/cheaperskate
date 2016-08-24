@@ -1,5 +1,5 @@
 import json
-from flask import Flask, url_for, redirect, session, render_template, jsonify
+from flask import Flask, url_for, redirect, session, render_template, jsonify, request
 from flask_oauth2_login import GoogleLogin
 from server.plaid_client import PlaidClient
 from server.calculator import Calculator
@@ -19,8 +19,6 @@ plaid_client = PlaidClient("/Users/timyousaf/plaid.txt")
 chart_config = json.load(open("static/config.json"))
 calculator = Calculator(chart_config)
 
-calculator.parseTransactions(plaid_client.getTransactions())
-
 @app.route("/charts")
 def charts():
     print google_login.session()
@@ -30,9 +28,12 @@ def charts():
 def config():
     return json.dumps(chart_config)
 
-@app.route("/api/uber")
-def api_uber():
-    return calculator.getTransactions()
+@app.route("/data")
+def data():
+    bucket = request.args.get('bucket', "M")
+    days_ago = int(request.args.get('days_ago', 730))
+    response = calculator.computeChartFromTransactions(plaid_client.getTransactions(), bucket, days_ago)
+    return json.dumps(response)
 
 @app.route("/")
 def index():
