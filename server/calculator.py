@@ -8,17 +8,21 @@ class Calculator():
 
 	def parseTransactions(self, transactions):
 
+		for transaction in transactions:
+			if transaction['name'] in ("Seamless","GrubHub"):
+				transaction['name'] = "Seamless"
+			else:
+				if "Food and Drink" in transaction['category']:
+					transaction['name'] = "FoodAndDrink"
+
 		t_df = pd.DataFrame(transactions)
 
 		start_days_ago = 730
 		end_days_from = 1
 		bucket = 'M' # D = day, W = week, M = month
-		
-		seamlessNormalizer = lambda x: "Seamless" if (x == "Seamless" or x == "GrubHub") else x
-		t_df['name'] = t_df['name'].apply(seamlessNormalizer)
 
 		# not actually sure what this does ...
-		df = t_df[ t_df.name.str.contains("Uber|Seamless|Amazon") ]
+		df = t_df[ t_df.name.str.contains("Uber|Seamless|Amazon|FoodAndDrink") ]
 		df['date'] = df['date'].apply(dateutil.parser.parse, dayfirst=True)
 		df = pd.pivot_table(df,index=["date"], columns=["name"], values=["amount"], aggfunc=[np.sum])
 		now = datetime.datetime.now()

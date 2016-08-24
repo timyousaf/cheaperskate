@@ -58,7 +58,8 @@ class PlaidClient():
 				for transaction in account_transactions:
 					cleaned.append({ "date" : transaction["date"], 
 									 "name" : transaction["name"], 
-									 "amount": transaction["amount"] 
+									 "amount": transaction["amount"],
+									 "category": transaction["category"] if 'category' in transaction else [] 
 									 } )
 				all_transactions.extend(cleaned)
 
