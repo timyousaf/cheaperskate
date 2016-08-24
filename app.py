@@ -3,6 +3,7 @@ from flask import Flask, url_for, redirect, session, render_template, jsonify
 from flask_oauth2_login import GoogleLogin
 from server.plaid_client import PlaidClient
 from server.calculator import Calculator
+import os
 
 app = Flask(__name__)
 
@@ -15,7 +16,8 @@ app.config.update(
 
 google_login = GoogleLogin(app)
 plaid_client = PlaidClient("/Users/timyousaf/plaid.txt")
-calculator = Calculator()
+chart_config = json.load(open("static/config.json"))
+calculator = Calculator(chart_config)
 
 calculator.parseTransactions(plaid_client.getTransactions())
 
@@ -23,6 +25,10 @@ calculator.parseTransactions(plaid_client.getTransactions())
 def charts():
     print google_login.session()
     return render_template('charts.html')
+
+@app.route("/config")
+def config():
+    return json.dumps(chart_config)
 
 @app.route("/api/uber")
 def api_uber():

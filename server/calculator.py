@@ -3,26 +3,37 @@ import pandas as pd
 import datetime
 import dateutil
 import json
+import copy
 
 class Calculator():
 
+	def __init__(self, chart_config):
+		self.chart_config = chart_config
+
 	def parseTransactions(self, transactions):
 
+		synthetic_transactions = []
 		for transaction in transactions:
-			if transaction['name'] in ("Seamless","GrubHub"):
-				transaction['name'] = "Seamless"
-			else:
-				if "Food and Drink" in transaction['category']:
-					transaction['name'] = "FoodAndDrink"
+			for chart in self.chart_config['lines']:
+				if transaction['name'] in chart['matchNames'] or not set(transaction['category']).isdisjoint(set(chart['matchCategories'])):
+					monster = copy.deepcopy(transaction)
+					monster['name'] = chart['key']
+					synthetic_transactions.append(monster)
 
-		t_df = pd.DataFrame(transactions)
+		filters = []
+		for chart in self.chart_config['lines']:
+			filters.append(chart['key'])
+
+		filter_string = '|'.join(filters)
+
+		t_df = pd.DataFrame(synthetic_transactions)
 
 		start_days_ago = 730
 		end_days_from = 1
 		bucket = 'M' # D = day, W = week, M = month
 
 		# not actually sure what this does ...
-		df = t_df[ t_df.name.str.contains("Uber|Seamless|Amazon|FoodAndDrink") ]
+		df = t_df[ t_df.name.str.contains(filter_string) ]
 		df['date'] = df['date'].apply(dateutil.parser.parse, dayfirst=True)
 		df = pd.pivot_table(df,index=["date"], columns=["name"], values=["amount"], aggfunc=[np.sum])
 		now = datetime.datetime.now()

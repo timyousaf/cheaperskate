@@ -27,10 +27,10 @@ const SimpleLineChart = React.createClass({
        <YAxis/>
        <Tooltip/>
        <Legend />
-       <Line type="monotone" dataKey="Uber" stroke="#5194EC" activeDot={{r: 5}}/>
-       <Line type="monotone" dataKey="Seamless" stroke="#DA907A" activeDot={{r: 5}}/>
-       <Line type="monotone" dataKey="Amazon" stroke="#60D394" activeDot={{r: 5}}/>
-       <Line type="monotone" dataKey="FoodAndDrink" stroke="#FF5964" activeDot={{r: 5}}/>
+       <Line type="monotone" dataKey="uber" stroke="#5194EC" activeDot={{r: 5}}/>
+       <Line type="monotone" dataKey="seamless" stroke="#DA907A" activeDot={{r: 5}}/>
+       <Line type="monotone" dataKey="amazon" stroke="#60D394" activeDot={{r: 5}}/>
+       <Line type="monotone" dataKey="foodanddrink" stroke="#FF5964" activeDot={{r: 5}}/>
       </LineChart>
     );
   }
