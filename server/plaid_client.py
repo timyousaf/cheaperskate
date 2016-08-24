@@ -1,85 +1,92 @@
 from plaid import Client
 from plaid import errors as plaid_errors
 from plaid.utils import json
+import cPickle as pickle
 import sys
+
+CACHE_FILENAME = "/Users/timyousaf/cheaperskate.cache"
 
 class PlaidClient():
 	
+	account_clients = {}
+	transactions = []
+
 	def __init__(self, filename):
 		# real plaid client
 		creds_file =  open(filename)
-		creds = json.loads(creds_file.read())
-		self.creds = creds
+		for line in creds_file:
+			try:
+				account = json.loads(line)
+				self.initializeClient(account)
+			except Exception as e:
+				print e
+				print("Failed to initialize Plaid client from line: {}".format(line))
+
+		if len(self.account_clients) == 0:
+			print("Failed to initalize any Plaid clients from the file {}".format(filename))
+			sys.exit()
+
 		self.loadTransactions()
 
-	def loadTransactions(self):
-		creds = self.creds		
-		client_id = creds["client_id"]
-		secret = creds["secret"]
-		amex_access_token = creds["amex_access_token"]
-		
-		print client_id, secret, amex_access_token
+	def initializeClient(self, account):
+		client_id = account["client_id"]
+		secret = account["secret"]
+		access_token = account["access_token"]
+		account_type = account["account_type"]
 
 		Client.config({
 			'url': 'https://tartan.plaid.com'
 		})
-		client = Client(client_id=client_id, secret=secret, access_token=amex_access_token)
+		client = Client(client_id=client_id, secret=secret, access_token=access_token)
 
-		try:
-		    response = client.connect_get()
-		except plaid_errors.PlaidError as e:
-			print e.message
-			print("Failed to load transactions from Plaid API.")
-			sys.exit()
-		else:
-			connect_data = response.json()
-			transactions = connect_data["transactions"]
-			print "Loaded {0} transactions.".format(len(transactions))
-			cleaned = []
-			for transaction in transactions:
-				cleaned.append({ "date" : transaction["date"], 
-								 "name" : transaction["name"], 
-								 "amount": transaction["amount"] 
-								 } )
-			if cleaned:
-				self.transactions = cleaned
+		self.account_clients[account_type] = client
+
+	def loadTransactions(self):
+
+		transactions = []
+
+		for account_type in self.account_clients:
+			try:
+				account_client = self.account_clients[account_type]
+				response = account_client.connect_get()
+			except Exception as e:
+				print e.message
+				print("Failed to load transactions from Plaid API for account {}".format(account_type))
 			else:
-				print("Failed to load transactions from Plaid API.")
+				connect_data = response.json()
+				account_transactions = connect_data["transactions"]
+				print "Loaded {0} transactions for account {1}.".format(len(account_transactions), account_type)
+				cleaned = []
+				for transaction in account_transactions:
+					cleaned.append({ "date" : transaction["date"], 
+									 "name" : transaction["name"], 
+									 "amount": transaction["amount"] 
+									 } )
+				transactions.extend(cleaned)
+
+		if len(transactions) == 0:
+			print("Failed to load any transactions from the Plaid API. Attempting to load from cache ...")
+			try:
+				self.loadTransactionsFromCache()
+			except Exception as e:
+				print e
+				print("Failed to load transactions from cache :( exiting.")
 				sys.exit()
+		else:
+			print("Loaded total of {} transactions.".format(len(transactions)))
+			self.transactions = transactions
+			self.saveTransactionsToCache()
+
+	def saveTransactionsToCache(self):
+		with open(CACHE_FILENAME, 'wb') as output:
+			pickle.dump(self.transactions, output, -1)
+		print("Cached transactions to disk.")
+
+
+	def loadTransactionsFromCache(self):
+		with open(CACHE_FILENAME, 'rb') as input:
+			self.transactions = pickle.load(input)
+			print("Loaded transactions from cache.")
 
 	def getTransactions(self):
 		return self.transactions
-
-	def getMockTransactions(self):
-		return [
-				{ "date" : "2016-05-03", "amount" : 11.65, "name" : "Uber" },
-				{ "date" : "2016-05-13", "amount" : 23.04, "name" : "Uber" },
-				{ "date" : "2016-05-16", "amount" : 13.41, "name" : "Uber" },
-				{ "date" : "2016-05-26", "amount" : 17.11, "name" : "Uber" },
-				{ "date" : "2016-05-27", "amount" : 13.16, "name" : "Uber" },
-				{ "date" : "2016-05-29", "amount" : 15.02, "name" : "Uber" },
-				{ "date" : "2016-05-30", "amount" : 11.29, "name" : "Uber" },
-				{ "date" : "2016-06-06", "amount" : 30.03, "name" : "Uber" },
-				{ "date" : "2016-06-15", "amount" : 32.11, "name" : "Uber" },
-				{ "date" : "2016-06-25", "amount" : 10.74, "name" : "Uber" },
-				{ "date" : "2016-07-03", "amount" : 11.89, "name" : "Uber" },
-				{ "date" : "2016-07-05", "amount" : 26.95, "name" : "Uber" },
-				{ "date" : "2016-07-22", "amount" : 19.59, "name" : "Uber" },
-				{ "date" : "2016-07-23", "amount" : 41.52, "name" : "Uber" },
-				{ "date" : "2016-07-25", "amount" : 85.26, "name" : "Uber" },
-				{ "date" : "2016-07-27", "amount" : 59.29, "name" : "Uber" },
-				{ "date" : "2016-07-29", "amount" : 58.50, "name" : "Uber" },
-				{ "date" : "2016-08-02", "amount" : 9.93, "name" : "Uber" },
-				{ "date" : "2016-08-07", "amount" : 13.97, "name" : "Uber" },
-				{ "date" : "2016-08-14", "amount" : 12.98, "name" : "Uber" },
-				{ "date" : "2016-08-16", "amount" : 5.44, "name" : "Uber" },
-				{ "date" : "2016-08-19", "amount" : 9.43, "name" : "Uber" },
-				{ "date" : "2016-09-03", "amount" : 20.32, "name" : "Uber" },
-				{ "date" : "2016-09-06", "amount" : 9.55, "name" : "Uber" },
-				{ "date" : "2016-10-03", "amount" : 17.41, "name" : "Uber" },
-				{ "date" : "2016-10-06", "amount" : 92.53, "name" : "Uber" },
-				{ "date" : "2016-11-01", "amount" : 44.01, "name" : "Uber" },
-				{ "date" : "2016-12-02", "amount" : 24.16, "name" : "Uber" },
-				{ "date" : "2016-12-04", "amount" : 17.35, "name" : "Uber" },
-				{ "date" : "2016-12-06", "amount" : 42.84, "name" : "Uber" }
-			]
