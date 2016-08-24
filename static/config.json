@@ -1,0 +1,32 @@
+{
+  "lines" : [
+    {
+      "label" : "Uber",
+      "key" : "uber",
+      "matchNames" : [ "Uber" ],
+      "matchCategories" : [],
+      "stroke" : "#5194EC"
+    },
+    {
+      "label" : "Seamless",
+      "key" : "seamless",
+      "matchNames" : [ "Seamless", "GrubHub" ],
+      "matchCategories" : [],
+      "stroke" : "#DA907A"
+    },
+    {
+      "label" : "Amazon",
+      "key" : "amazon",
+      "matchNames" : [ "Amazon" ],
+      "matchCategories" : [],
+      "stroke" : "#60D394"
+    },
+    {
+      "label" : "Food and Drink",
+      "key" : "foodanddrink",
+      "matchNames" : [],
+      "matchCategories" : [ "Food and Drink" ],
+      "stroke" : "#FF5964"
+    }
+  ]
+}
