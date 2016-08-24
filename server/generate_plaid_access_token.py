@@ -4,22 +4,6 @@ from plaid.utils import json
 from optparse import OptionParser
 import sys
 
-# parser = OptionParser()
-# parser.add_option("-f", "--file", dest="filename",
-#                   help="Specify the file from which to load credentials.")
-# (options, args) = parser.parse_args()
-
-# if options.filename:
-# 	try:
-# 		creds_file =  open(filename)
-# 	except:
-# 		print("Failed to open file. Please pass a valid filename with -f.")
-# 		sys.exit()
-# else:
-# 	print("Please specify a filename with -f.")
-# 	sys.exit()
-
-
 client_id = raw_input("Please enter your client id: ")
 secret = raw_input("Please enter your secret: ")
 
