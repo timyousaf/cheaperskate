@@ -10,8 +10,6 @@ const SimpleLineChart = React.createClass({
           dataType: 'json',
           cache: false,
           success: function(data) {
-            console.log("got some data")
-            console.log(this)
             this.setState({data: data});
           }.bind(this),
           error: function(xhr, status, err) {
@@ -36,7 +34,34 @@ const SimpleLineChart = React.createClass({
   }
 })
 
-ReactDOM.render(
-  <SimpleLineChart url="/data?bucket=M&days_ago=730" />,
+var options = [
+    { value: 'D', label: 'Day' },
+    { value: 'W', label: 'Week' },
+    { value: 'M', label: 'Month' }
+];
+
+function renderChart(url) {
+  console.log("Rendering with URL " + url)
+  ReactDOM.render(
+  <SimpleLineChart url={url} />,
   document.getElementById('chartOne')
+  );
+}
+
+function logChange(change) {
+    var val = change.value
+    console.log("Selected: " + val);
+    renderChart("/data?bucket=" + val + "&days_ago=730")
+}
+
+ReactDOM.render(
+  <Select
+    name="form-field-name"
+    value="one"
+    options={options}
+    onChange={logChange}
+    />,
+  document.getElementById('time-bucket-selector')
 );
+
+renderChart("/data?bucket=M&days_ago=730")
