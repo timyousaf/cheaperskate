@@ -27,17 +27,18 @@ class PlaidClient():
 		self.loadTransactions()
 
 	def initializeClient(self, account):
-		client_id = account["client_id"]
-		secret = account["secret"]
-		access_token = account["access_token"]
-		account_type = account["account_type"]
 
 		Client.config({
 			'url': 'https://tartan.plaid.com'
 		})
-		client = Client(client_id=client_id, secret=secret, access_token=access_token)
+		
+		client = Client(
+			client_id=account["client_id"], 
+			secret=account["secret"], 
+			access_token=account["access_token"]
+			)
 
-		self.account_clients[account_type] = client
+		self.account_clients[account["account_type"]] = client
 
 	def loadTransactions(self):
 
