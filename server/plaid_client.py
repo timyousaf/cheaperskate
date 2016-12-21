@@ -53,13 +53,17 @@ class PlaidClient():
 				print("Failed to load transactions from Plaid API for account {}".format(account_type))
 			else:
 				connect_data = response.json()
+				
 				account_transactions = connect_data["transactions"]
 				print "Loaded {0} transactions for account {1}.".format(len(account_transactions), account_type)
 				cleaned = []
+				
 				for transaction in account_transactions:
+					
 					cleaned.append({ "date" : transaction["date"], 
 									 "name" : transaction["name"], 
 									 "amount": transaction["amount"],
+									 "account" : account_type,
 									 "category": transaction["category"] if 'category' in transaction else [] 
 									 } )
 				all_transactions.extend(cleaned)
