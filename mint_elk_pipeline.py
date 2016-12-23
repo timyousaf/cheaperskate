@@ -7,7 +7,7 @@ import logging
 
 backup_filename = "/Users/timyousaf/.cheaperskate.mint.cache"
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-logging.basicConfig(filename='cheaperskate.log',level=logging.INFO)
+logging.basicConfig(filename='/Users/timyousaf/cheaperskate.log',level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler())
 
 class MintPipeline():
