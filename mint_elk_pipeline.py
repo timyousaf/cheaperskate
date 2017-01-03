@@ -1,9 +1,11 @@
 import mintapi
+import copy
 import sys
 import json
 import cPickle as pickle
 from elasticsearch import Elasticsearch
 import logging
+import hashlib
 
 backup_filename = "/Users/timyousaf/.cheaperskate.mint.cache"
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
@@ -13,6 +15,7 @@ logging.getLogger().addHandler(logging.StreamHandler())
 class MintPipeline():
 	
 	accounts = {}
+	transactions = []
 
 	def loadMintAccount(self, creds):
 		email = creds["email"]
@@ -53,18 +56,51 @@ class MintPipeline():
 				logging.critical(e)
 				sys.exit()
 
-	def index(self):
+	def hashTransaction(self, transaction):
+		transaction = copy.deepcopy(transaction)
+		del(transaction["owner"])
+		del(transaction["category"])
+		m = hashlib.md5()
+		m.update(json.dumps(transaction))
+		return m.hexdigest()
+
+	def dedupeTransactions(self):
+		deduped = {}
+		duplicates = 0
+		logging.info("Deduping transactions ...")
+		# we dedupe on hash after removing the "owner" and "category" fields
+		# the first transaction to be seen wins (subsequent duplicates are dropped)
+		for account in self.accounts:
+			transactions = self.accounts[account]
+			for transaction in transactions:
+				md5 = self.hashTransaction(transaction)
+				if md5 in deduped:
+					logging.info("Found a duplicate!")
+					duplicates += 1
+					logging.info(deduped[md5])
+					logging.info(transaction)
+					print
+				else:
+					deduped[md5] = transaction
+		dedupedTransactions = []
+		for k in deduped:
+			dedupedTransactions.append(deduped[k])
+		self.transactions = dedupedTransactions
+		print "Found {0} duplicates.".format(duplicates)
+
+	def indexTransactions(self):
 		logging.info("Deleting ElasticSearch index ...")
 		es.indices.delete(index='test-index', ignore=[400, 404])
 
 		id = 0
-		for account in self.accounts:
-			transactions = self.accounts[account]
-			for transaction in transactions:
-			  es.index(index='mint', doc_type='transaction', id=id, body=transaction)
-			  id += 1
-			  if id % 100 is 0: logging.info("Indexed {0} transactions ...".format(id))
+		# for account in self.accounts:
+		# 	transactions = self.accounts[account]
+		for transaction in self.transactions:
+		  es.index(index='mint', doc_type='transaction', id=id, body=transaction)
+		  id += 1
+		  if id % 100 is 0: logging.info("Indexed {0} transactions ...".format(id))
 
 pipeline = MintPipeline("/Users/timyousaf/mint.txt")
-pipeline.index()
+pipeline.dedupeTransactions()
+pipeline.indexTransactions()
 logging.info("Finished!")
