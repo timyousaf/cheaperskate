@@ -90,7 +90,54 @@ class MintPipeline():
 
 	def indexTransactions(self):
 		logging.info("Deleting ElasticSearch index ...")
-		es.indices.delete(index='test-index', ignore=[400, 404])
+		es.indices.delete(index='mint', ignore=[400, 404])
+
+		index_mapping = {
+		"mappings" : {
+		    'transaction': {
+		        "properties": {
+		          "account_name": {
+		            "type": "string",
+		            "index" : "not_analyzed"
+		          },
+		          "amount": {
+		            "type": "double"
+		          },
+		          "category": {
+		            "type": "string",
+		            "index" : "not_analyzed"
+		          },
+		          "date": {
+		            "type": "date",
+		            "format": "strict_date_optional_time||epoch_millis"
+		          },
+		          "description": {
+		            "type": "string",
+		            "index" : "not_analyzed"
+		          },
+		          "labels": {
+		            "type": "string",
+		            "index" : "not_analyzed"
+		          },
+		          "notes": {
+		            "type": "string"
+		          },
+		          "original_description": {
+		            "type": "string",
+		            "index" : "not_analyzed"
+		          },
+		          "owner": {
+		            "type": "string"
+		          },
+		          "transaction_type": {
+		            "type": "string"
+		          }
+		        }
+		    }
+	    }
+	    }
+
+		es.indices.create(index='mint', ignore=400, body=index_mapping)
 
 		id = 0
 		# for account in self.accounts:
