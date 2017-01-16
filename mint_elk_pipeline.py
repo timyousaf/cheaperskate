@@ -22,7 +22,6 @@ class MintPipeline():
 		password = creds["password"]
 		ius_session = creds["ius_session"]
 		thx_guid = creds["thx_guid"]
-		owner = creds["owner"]
 
 		logging.info("Querying Mint ...")
 		mint = mintapi.Mint(email, password, ius_session, thx_guid)
@@ -31,7 +30,14 @@ class MintPipeline():
 		
 		logging.info("Received transactions for {0}".format(email))
 		for transaction in transactions:
-			  transaction["owner"] = owner
+			  if "LP" in transaction["account_name"]:
+				transaction["owner"] = "LP"
+			  elif "TY" in transaction["account_name"]:
+			  	transaction["owner"] = "TY"
+			  elif "Joint" in transaction["account_name"]:
+			  	transaction["owner"] = "Joint"
+			  else:
+			  	transaction["owner"] = "Unknown"
 
 		return transactions
 
