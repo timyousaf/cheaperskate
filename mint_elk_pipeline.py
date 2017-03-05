@@ -12,6 +12,29 @@ es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
 logging.basicConfig(format='%(asctime)s %(message)s', filename='/Users/timyousaf/cheaperskate.log',level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler())
 
+valid_categories = {
+  "clothing",
+  "electronics & software",
+  "entertainment",
+  "family trip",
+  "furnishings",
+  "gifts & donations",
+  "groceries",
+  "restaurants",
+  "health & fitness",
+  "personal care",
+  "mortgage & rent",
+  "utilities",
+  "service fee",
+  "taxes",
+  "transportation",
+  "vacation",
+  "transfer",
+  "pets",
+  "credit card payment",
+  "income"
+}
+
 class MintPipeline():
 	
 	accounts = {}
@@ -25,7 +48,7 @@ class MintPipeline():
 
 		logging.info("Querying Mint ...")
 		mint = mintapi.Mint(email, password, ius_session, thx_guid)
-		transactions = mint.get_transactions()
+		transactions = mint.get_transactions() #_csv(include_investment=True)
 		transactions = json.loads(transactions.to_json(orient='records', date_format='iso'))
 		
 		logging.info("Received transactions for {0}".format(email))
@@ -70,8 +93,10 @@ class MintPipeline():
 		m.update(json.dumps(transaction))
 		return m.hexdigest()
 
-	def dedupeTransactions(self):
+	def dedupeAndValidateTransactions(self):
 		deduped = {}
+		invalid_categories_observed = {}
+
 		duplicates = 0
 		logging.info("Deduping transactions ...")
 		# we dedupe on hash after removing the "owner" and "category" fields
@@ -79,6 +104,13 @@ class MintPipeline():
 		for account in self.accounts:
 			transactions = self.accounts[account]
 			for transaction in transactions:
+				if transaction['category'] and "2017" in transaction['date']:
+					category = transaction['category'].lower()
+					if category not in valid_categories:
+						if category not in invalid_categories_observed:
+							invalid_categories_observed[category] = set([ transaction['description'] ])
+						else:
+							invalid_categories_observed[category].add(transaction['description'])
 				md5 = self.hashTransaction(transaction)
 				if md5 in deduped:
 					logging.info("Found a duplicate!")
@@ -93,6 +125,9 @@ class MintPipeline():
 			dedupedTransactions.append(deduped[k])
 		self.transactions = dedupedTransactions
 		print "Found {0} duplicates.".format(duplicates)
+		print "{0} invalid categories observed in 2017: ".format(len(invalid_categories_observed))
+		for category in invalid_categories_observed:
+			print "{0}: {1}".format(category, "; ".join(list(invalid_categories_observed[category])))
 
 	def indexTransactions(self):
 		logging.info("Deleting ElasticSearch index ...")
@@ -154,6 +189,6 @@ class MintPipeline():
 		  if id % 100 is 0: logging.info("Indexed {0} transactions ...".format(id))
 
 pipeline = MintPipeline("/Users/timyousaf/mint.txt")
-pipeline.dedupeTransactions()
-pipeline.indexTransactions()
+pipeline.dedupeAndValidateTransactions()
+#pipeline.indexTransactions()
 logging.info("Finished!")
