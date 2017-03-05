@@ -6,10 +6,15 @@ import cPickle as pickle
 from elasticsearch import Elasticsearch
 import logging
 import hashlib
+import os
 
-backup_filename = "/Users/timyousaf/.cheaperskate.mint.cache"
+home = os.path.expanduser("~")
+backup_filename = os.path.join(home, '.cheaperskate.mint.cache')
+log_filename = os.path.join(home, 'cheaperskate.log')
+mint_creds_file = os.path.join(home, 'mint.txt')
+
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-logging.basicConfig(format='%(asctime)s %(message)s', filename='/Users/timyousaf/cheaperskate.log',level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(message)s', filename=log_filename,level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler())
 
 valid_categories = {
@@ -188,7 +193,7 @@ class MintPipeline():
 		  id += 1
 		  if id % 100 is 0: logging.info("Indexed {0} transactions ...".format(id))
 
-pipeline = MintPipeline("/Users/timyousaf/mint.txt")
+pipeline = MintPipeline(mint_creds_file)
 pipeline.dedupeAndValidateTransactions()
-#pipeline.indexTransactions()
+pipeline.indexTransactions()
 logging.info("Finished!")
