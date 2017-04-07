@@ -14,7 +14,7 @@ log_filename = os.path.join(home, 'cheaperskate.log')
 mint_creds_file = os.path.join(home, 'mint.txt')
 
 es = Elasticsearch([{'host': 'localhost', 'port': 9200}])
-logging.basicConfig(format='%(asctime)s %(message)s', filename=log_filename,level=logging.INFO)
+logging.basicConfig(format='%(asctime)s %(message)s', filename=log_filename,level=logging.ERROR)
 logging.getLogger().addHandler(logging.StreamHandler())
 
 valid_categories = {
